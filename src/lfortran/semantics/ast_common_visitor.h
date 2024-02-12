@@ -2554,7 +2554,7 @@ public:
                                                     int64_t val = real_const->m_r;
                                                     ASR::expr_t *int_const = ASRUtils::EXPR(ASR::make_IntegerConstant_t(al, real_const->base.base.loc,
                                                         val, ASRUtils::type_get_past_array(int_type)));
-                                                    body.push_back(al, int_const);
+                                                    body.push_back(al, int_const);  
                                                 } else {
                                                     is_real = false;
                                                     break;
@@ -2687,6 +2687,31 @@ public:
                                                 }
                                             }
                                             if (is_complex) {
+                                                ASR::expr_t* array_const = ASRUtils::EXPR(ASRUtils::make_ArrayConstant_t_util(al, a->base.base.loc, body.p, body.size(), complex_type, a->m_storage_format));
+                                                cast->m_value = ASRUtils::expr_value(array_const);
+                                                value = cast->m_value;
+                                            }
+                                        } else if (cast_kind == ASR::cast_kindType::RealToComplex) {
+                                            bool is_real = true;
+                                            ASR::ArrayConstant_t *a = ASR::down_cast<ASR::ArrayConstant_t>(cast->m_arg);
+                                            ASR::ttype_t* complex_type = cast->m_type;
+                                            Vec<ASR::expr_t*> body;
+                                            body.reserve(al, a->n_args);
+                                            for (size_t i = 0; i < a->n_args; i++) {
+                                                ASR::expr_t *e = a->m_args[i];
+                                                // it will be RealConstant_t convert it to ComplexConstant_t
+                                                if (ASR::is_a<ASR::RealConstant_t>(*e)) {
+                                                    ASR::RealConstant_t *real_const = ASR::down_cast<ASR::RealConstant_t>(e);
+                                                    int64_t val = real_const->m_r;
+                                                    ASR::expr_t *complex_const = ASRUtils::EXPR(ASR::make_ComplexConstant_t(al, complex_const->base.base.loc,
+                                                        val, ASRUtils::type_get_past_array(complex_type)));
+                                                    body.push_back(al, complex_const);
+                                                } else {
+                                                    is_real = false;
+                                                    break;
+                                                }
+                                            }
+                                            if (is_real) {
                                                 ASR::expr_t* array_const = ASRUtils::EXPR(ASRUtils::make_ArrayConstant_t_util(al, a->base.base.loc, body.p, body.size(), complex_type, a->m_storage_format));
                                                 cast->m_value = ASRUtils::expr_value(array_const);
                                                 value = cast->m_value;
