@@ -2554,8 +2554,7 @@ public:
                                                     int64_t val = real_const->m_r;
                                                     ASR::expr_t *int_const = ASRUtils::EXPR(ASR::make_IntegerConstant_t(al, real_const->base.base.loc,
                                                         val, ASRUtils::type_get_past_array(int_type)));
-                                                    body.push_back(al, int_const);
-                                                    
+                                                    body.push_back(al, int_const);  
                                                 } else {
                                                     is_real = false;
                                                     break;
